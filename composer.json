@@ -1,0 +1,23 @@
+{
+	"name": "yii2bundle/yii2-i18n",
+	"type": "yii2-extension",
+	"keywords": ["yii2","module","i18n","language"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Yamshikov Vitaliy",
+			"email": "theyamshikov@yandex.ru"
+		}
+	],
+	"minimum-stability": "dev",
+	"autoload": {
+		"psr-4": {
+			"yii2bundle\\i18n\\": "src",
+			"yii2bundle\\i18n\\tests\\": "tests"
+		}
+	},
+	"require": {
+		"yiisoft/yii2": "*",
+		"php": ">=5.3.0"
+	}
+}

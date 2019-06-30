@@ -19,20 +19,50 @@ use yii2rails\domain\services\base\BaseActiveService;
  */
 class ContentService extends BaseActiveService implements ContentInterface {
 
-    public function updateForObject(int $entityId, int $extId, array $value, string $lang = null) {
+    public function deleteForObject(int $entityId, int $extId, string $lang = null) {
+        $condition = [
+            'entity_id' => $entityId,
+            'ext_id' => $extId,
+        ];
+        if($lang) {
+            $condition['language_code'] = $langCode;
+        }
+        $query = Query::forge();
+        $query->andWhere($condition);
+        /** @var ContentEntity[] $collection */
+        $collection = $this->all($query);
+        foreach ($collection as $contentEntity) {
+            $this->deleteById($contentEntity->id);
+        }
+    }
+
+    private function filterFields(int $entityId, array $value) {
+        $fieldCollection = \App::$domain->i18n->field->allByEntityId($entityId);
+        $fieldNames = ArrayHelper::getColumn($fieldCollection, 'name');
+        $value = ArrayHelper::filter($value, $fieldNames);
+        return $value;
+    }
+
+    public function updateOrInsertForObject(int $entityId, int $extId, array $value, string $lang = null) {
         $lang = $this->forgeLangCode($lang);
         try {
-            $contentEntity = $this->oneForObject($entityId, $extId, $lang);
+            return $this->updateForObject($entityId, $extId, $value, $lang);
         } catch (NotFoundHttpException $e) {
             $this->insertForObject($entityId, $extId, $value, $lang);
             $contentEntity = $this->oneForObject($entityId, $extId, $lang);
             return $contentEntity;
         }
+    }
+
+    public function updateForObject(int $entityId, int $extId, array $value, string $lang = null) {
+        $value = $this->filterFields($entityId, $value);
+        $contentEntity = $this->oneForObject($entityId, $extId, $lang);
         $contentEntity->value = $value;
         return $this->update($contentEntity);
     }
 
     public function insertForObject(int $entityId, int $extId, array $value, string $lang = null) {
+        $value = $this->filterFields($entityId, $value);
         $lang = $this->forgeLangCode($lang);
         $contentEntity = new ContentEntity;
         $contentEntity->entity_id = $entityId;

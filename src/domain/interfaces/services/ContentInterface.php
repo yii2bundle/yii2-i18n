@@ -15,6 +15,8 @@ use yii2rails\domain\interfaces\services\CrudInterface;
  */
 interface ContentInterface extends CrudInterface {
 
+    public function deleteForObject(int $entityId, int $extId, string $lang = null);
+    public function updateOrInsertForObject(int $entityId, int $extId, array $value, string $lang = null);
     public function updateForObject(int $entityId, int $extId, array $value, string $lang = null);
     public function insertForObject(int $entityId, int $extId, array $value, string $lang = null);
     public function oneForObject(int $entityId, int $extId, string $langCode = null) : ContentEntity;

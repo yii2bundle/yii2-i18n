@@ -103,6 +103,10 @@ class ContentService extends BaseActiveService implements ContentInterface {
         return $collection;
     }
 
+    public function search(array $condition, Query $query = null) {
+
+    }
+
     public function allForCollection(int $entityId, array $extIdList, string $langCode = null) : array {
         $langCode = $this->forgeLangCode($langCode);
         $query = Query::forge();

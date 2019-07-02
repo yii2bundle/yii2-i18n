@@ -11,7 +11,7 @@ use yii2rails\domain\services\base\BaseActiveService;
 use yii2rails\domain\values\BoolValue;
 
 /**
- * Class ContentService
+ * Class ContentSersvice
  * 
  * @package yii2bundle\i18n\domain\services
  * 
@@ -48,7 +48,7 @@ class ContentService extends BaseActiveService implements ContentInterface
             }
             $query->andWhere($condition);
         }
-        $query->setJsonbCondition($attrs, $search_string, 'like');
+        $query->setJsonbCondition($attrs, $search_string, 'like','value', true);
 
         return $this->all($query);
     }

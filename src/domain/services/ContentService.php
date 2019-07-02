@@ -8,6 +8,7 @@ use yii2bundle\i18n\domain\entities\ContentEntity;
 use yii2bundle\i18n\domain\interfaces\services\ContentInterface;
 use yii2rails\domain\data\Query;
 use yii2rails\domain\services\base\BaseActiveService;
+use yii2rails\domain\values\BoolValue;
 
 /**
  * Class ContentService
@@ -17,7 +18,42 @@ use yii2rails\domain\services\base\BaseActiveService;
  * @property-read \yii2bundle\i18n\domain\Domain $domain
  * @property-read \yii2bundle\i18n\domain\interfaces\repositories\ContentInterface $repository
  */
-class ContentService extends BaseActiveService implements ContentInterface {
+class ContentService extends BaseActiveService implements ContentInterface 
+{
+    /**
+     * Поиск по name
+     * @param string $search_string
+     * @param string|null $lang
+     * @return array|mixed|null
+     */
+    public function searchByName(string $search_string, string $lang = null)
+    {
+        return $this->search('name', $search_string, $lang);
+    }
+
+    /**
+     * Поиск по Json полю
+     * @param $attrs смотри Query::setJsonbCondition
+     * @param string $search_string
+     * @param string|null $lang
+     * @return array|mixed|null
+     */
+    public function search($attrs, string $search_string, string $lang = null)
+    {
+        $query = Query::forge();
+        if ($lang === false){
+            $langCode = $this->forgeLangCode($lang);
+            if($langCode) {
+                $condition['language_code'] = $langCode;
+            }
+            $query->andWhere($condition);
+        }
+        $query->setJsonbCondition($attrs, $search_string, 'like');
+
+        return $this->all($query);
+    }
+
+
 
     public function deleteForObject(int $entityId, int $extId, string $lang = null) {
         $condition = [
@@ -101,10 +137,6 @@ class ContentService extends BaseActiveService implements ContentInterface {
             $item->description = ArrayHelper::getValue($contentValue, 'description');
         }
         return $collection;
-    }
-
-    public function search(array $condition, Query $query = null) {
-
     }
 
     public function allForCollection(int $entityId, array $extIdList, string $langCode = null) : array {

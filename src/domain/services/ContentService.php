@@ -32,6 +32,24 @@ class ContentService extends BaseActiveService implements ContentInterface
     }
 
     /**
+     * для поиска по нескольким ключам в json
+     *
+     * @param array $jsonFields массив ключ - значение
+     * @param string|null $lang
+     * @return array|mixed|null
+     */
+    public function multipleSearchByJson(array $jsonFields, string $lang = null)
+    {
+        $query = Query::forge();
+        $this->addLangCode($query, $lang);
+        foreach ($jsonFields as $field => $value){
+            $query->setJsonbCondition($field, $value, 'like','value', true);
+        }
+
+        return $this->all($query);
+    }
+
+    /**
      * Поиск по Json полю
      * @param $attrs смотри Query::setJsonbCondition
      * @param string $search_string
@@ -41,18 +59,23 @@ class ContentService extends BaseActiveService implements ContentInterface
     public function search($attrs, string $search_string, string $lang = null)
     {
         $query = Query::forge();
-        if ($lang === false){
-            $langCode = $this->forgeLangCode($lang);
-            if($langCode) {
-                $condition['language_code'] = $langCode;
-            }
-            $query->andWhere($condition);
-        }
+        $this->addLangCode($query, $lang);
         $query->setJsonbCondition($attrs, $search_string, 'like','value', true);
 
         return $this->all($query);
     }
 
+    public function addLangCode(Query $query, string $lang = null)
+    {
+        $langCode = null;
+        if ($lang !== false){
+            $langCode = $this->forgeLangCode($lang);
+        }
+        if ($langCode === null){
+            return;
+        }
+        $query->andWhere(['language_code' => $langCode]);
+    }
 
 
     public function deleteForObject(int $entityId, int $extId, string $lang = null) {

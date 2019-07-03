@@ -152,12 +152,15 @@ class ContentService extends BaseActiveService implements ContentInterface
 
     public function translate(array $collection, int $entityId, string $langCode = null) : array {
         $langCode = $this->forgeLangCode($langCode);
+        $fields = \App::$domain->i18n->field->allByEntityId($entityId);
+        $fields = ArrayHelper::getColumn($fields, 'name');
         $ids = ArrayHelper::getColumn($collection, 'id');
         $contentCollection = \App::$domain->i18n->content->allForCollection($entityId, $ids);
         foreach ($collection as $item) {
             $contentValue = ArrayHelper::getValue($contentCollection, $item->id . DOT . 'value');
-            $item->name = ArrayHelper::getValue($contentValue, 'name');
-            $item->description = ArrayHelper::getValue($contentValue, 'description');
+            foreach ($fields as $field){
+                $item->{$field} = ArrayHelper::getValue($contentValue, $field);
+            }
         }
         return $collection;
     }

@@ -13,6 +13,7 @@ use yii2rails\domain\BaseEntity;
  * @property $domain_id
  * @property $name
  * @property $title
+ * @property $table
  */
 class EntityEntity extends BaseEntity {
 
@@ -20,5 +21,6 @@ class EntityEntity extends BaseEntity {
 	protected $domain_id;
 	protected $name;
 	protected $title;
+	protected $table;
 
 }

@@ -20,7 +20,8 @@ class m190629_094110_create_localization_entity_table extends Migration {
 			'id' => $this->primaryKey()->notNull()->comment('Идентификатор'),
 			'domain_id' => $this->integer()->notNull()->comment('ID предметной области'),
 			'name' => $this->string()->notNull()->comment('Имя'),
-			'title' => $this->string()->notNull()->comment('Название'),
+			'title' => $this->string()->comment('Название'),
+			'table' => $this->string()->comment('Глобальное имя таблицы'),
 		];
 	}
 

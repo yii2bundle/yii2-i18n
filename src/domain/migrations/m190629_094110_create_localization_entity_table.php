@@ -18,7 +18,7 @@ class m190629_094110_create_localization_entity_table extends Migration {
 	{
 		return [
 			'id' => $this->primaryKey()->notNull()->comment('Идентификатор'),
-			'domain_id' => $this->integer()->notNull()->comment('ID предметной области'),
+			'book_id' => $this->integer()->notNull()->comment('ID предметной области'),
 			'name' => $this->string()->notNull()->comment('Имя'),
 			'title' => $this->string()->comment('Название'),
 			'table' => $this->string()->comment('Глобальное имя таблицы'),
@@ -27,15 +27,15 @@ class m190629_094110_create_localization_entity_table extends Migration {
 
 	public function afterCreate()
 	{
-	    $this->myCreateIndexUnique(['domain_id', 'name']);
-	    $this->myCreateIndexUnique(['domain_id', 'title']);
-		$this->myAddForeignKey(
-			'domain_id',
-			'localization_domain',
-			'id',
-			'CASCADE',
-			'CASCADE'
-		);
+	    $this->myCreateIndexUnique(['book_id', 'name']);
+	    $this->myCreateIndexUnique(['book_id', 'title']);
+        $this->myAddForeignKey(
+            'book_id',
+            'model_book',
+            'id',
+            'CASCADE',
+            'CASCADE'
+        );
 	}
 
 }

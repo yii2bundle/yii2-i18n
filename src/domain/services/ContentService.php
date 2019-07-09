@@ -3,6 +3,7 @@
 namespace yii2bundle\i18n\domain\services;
 
 use yii\helpers\ArrayHelper;
+use yii\helpers\HtmlPurifier;
 use yii\web\NotFoundHttpException;
 use yii2bundle\i18n\domain\entities\ContentEntity;
 use yii2bundle\i18n\domain\interfaces\services\ContentInterface;
@@ -113,10 +114,29 @@ class ContentService extends BaseActiveService implements ContentInterface
         }
     }
 
+    public function purifyValue($value)
+    {
+        if (is_array($value)){
+            foreach ($value as &$val){
+                $val = HtmlPurifier::process($val,[
+                    'URI.AllowedSchemes' => [ 'data' => true, 'src' => true,'http' => true, 'https' => true,],
+                    'URI.DisableExternalResources' => 'false'
+                ]);
+            }
+
+            return $value;
+        }
+
+        return HtmlPurifier::process($value,[
+            'URI.AllowedSchemes' => [ 'data' => true, 'src' => true,'http' => true, 'https' => true,],
+            'URI.DisableExternalResources' => 'false'
+        ]);
+    }
+
     public function updateForObject(int $entityId, int $extId, array $value, string $lang = null) {
         $value = $this->filterFields($entityId, $value);
         $contentEntity = $this->oneForObject($entityId, $extId, $lang);
-        $contentEntity->value = $value;
+        $contentEntity->value =  $this->purifyValue($value);
         return $this->update($contentEntity);
     }
 
@@ -127,7 +147,7 @@ class ContentService extends BaseActiveService implements ContentInterface
         $contentEntity->entity_id = $entityId;
         $contentEntity->ext_id = $extId;
         $contentEntity->language_code = $lang;
-        $contentEntity->value = $value;
+        $contentEntity->value =  $this->purifyValue($value);
         return $this->createEntity($contentEntity);
     }
 
